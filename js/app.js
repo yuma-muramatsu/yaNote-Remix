@@ -39,14 +39,14 @@ class YaNoteApp {
         this.initTouchPrevention();
         this.applyTheme(this.currentTheme);
 
-        const stored = localStorage.getItem("yaNoteRemixData");
-        const skipGuide = localStorage.getItem("skipGuideLoad");
+        const stored = sessionStorage.getItem("yaNoteRemixData");
+        const skipGuide = sessionStorage.getItem("skipGuideLoad");
 
         if (stored) {
             this.loadFromLocalStorage();
             this.restored = true;
         } else if (skipGuide === "true") {
-            localStorage.removeItem("skipGuideLoad");
+            sessionStorage.removeItem("skipGuideLoad");
             const cx = 5000, cy = 5000;
             let node = this.createNode("中心ノード", cx, cy);
             node.setType(this.firstNodeType);
@@ -80,6 +80,7 @@ class YaNoteApp {
         if (!stored) { localStorage.setItem(key, VERSION); return; }
         if (stored !== VERSION) {
             localStorage.setItem(key, VERSION);
+            sessionStorage.removeItem("yaNoteRemixData");
             const n = document.createElement('div');
             n.style.cssText = 'position:fixed;bottom:50px;left:50%;transform:translateX(-50%);background:var(--color-accent);color:white;padding:10px 24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:30000;font-weight:600;font-family:var(--font-family);';
             n.textContent = `yaNote Remix が ${VERSION} に更新されました`;
@@ -164,7 +165,7 @@ class YaNoteApp {
 
         // Main keyboard handler (capture phase to intercept before contentEditable)
         document.addEventListener("keydown", e => this.handleKeyDown(e), true);
-        window.addEventListener("storage", e => { if (e.key === "yaNoteRemixData") location.reload(); });
+        window.addEventListener("storage", e => { if (e.key === "yaNoteRemixTheme") location.reload(); });
 
         // Global Paste handler for JSON loading
         window.addEventListener("paste", e => {
@@ -835,8 +836,8 @@ class YaNoteApp {
         this.updateGlobalTransform(); this.updateAllConnections(); this.updateControlButtonsState();
     }
 
-    saveToLocalStorage() { localStorage.setItem("yaNoteRemixData", JSON.stringify({ version: VERSION, data: this.captureState() })); }
-    loadFromLocalStorage() { const d = localStorage.getItem("yaNoteRemixData"); if (d) { try { const o = JSON.parse(d); this.restoreState(o.data); this.undoStack.push(this.captureState()); } catch (e) { alert("データ読み込みエラー: " + e.message); } } }
+    saveToLocalStorage() { sessionStorage.setItem("yaNoteRemixData", JSON.stringify({ version: VERSION, data: this.captureState() })); }
+    loadFromLocalStorage() { const d = sessionStorage.getItem("yaNoteRemixData"); if (d) { try { const o = JSON.parse(d); this.restoreState(o.data); this.undoStack.push(this.captureState()); } catch (e) { alert("データ読み込みエラー: " + e.message); } } }
     undo() { if (this.undoStack.length > 1) { this.redoStack.push(this.undoStack.pop()); this.restoreState(this.undoStack[this.undoStack.length - 1]); } }
     redo() { if (this.redoStack.length > 0) { const n = this.redoStack.pop(); this.undoStack.push(n); this.restoreState(n); } }
     exportState() { return JSON.stringify({ version: VERSION, data: this.undoStack[this.undoStack.length - 1] }, null, 2); }
@@ -937,12 +938,12 @@ document.addEventListener("DOMContentLoaded", () => {
             requestAnimationFrame(() => app.resetView());
         }).catch(e => { alert("読み込みエラー: " + e.message); window.history.replaceState({}, document.title, window.location.pathname); });
     } else if (newParam === 'true') {
-        localStorage.removeItem("yaNoteRemixData"); localStorage.setItem("skipGuideLoad", "true");
+        sessionStorage.removeItem("yaNoteRemixData"); sessionStorage.setItem("skipGuideLoad", "true");
         window.history.replaceState({}, document.title, window.location.pathname); location.reload();
     }
 
     // Reset / Export / Import
-    document.getElementById("resetBtn").addEventListener("click", () => { if (confirm("新規作成しますか？\n現在の内容は失われます。")) { localStorage.removeItem("yaNoteRemixData"); localStorage.setItem("skipGuideLoad", "true"); location.reload(); } });
+    document.getElementById("resetBtn").addEventListener("click", () => { if (confirm("新規作成しますか？\n現在の内容は失われます。")) { sessionStorage.removeItem("yaNoteRemixData"); sessionStorage.setItem("skipGuideLoad", "true"); location.reload(); } });
     document.getElementById("exportBtn").addEventListener("click", () => {
         const json = app.exportState(); const blob = new Blob([json], { type: "application/json" }); const url = URL.createObjectURL(blob);
         const now = new Date(); const pad = n => n.toString().padStart(2, "0");
