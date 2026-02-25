@@ -1,0 +1,188 @@
+/* ===== yaNote Remix - Design Tokens ===== */
+/* Based on original yaNote color scheme */
+:root {
+  /* --- Color Palette (matches original yaNote light theme) --- */
+  --color-bg-primary: #f9f9f9;
+  --color-bg-secondary: #f0f0f0;
+  --color-bg-canvas: #f9f9f9;
+  --color-surface: #ddd;
+  --color-surface-hover: #d0d0d0;
+  --color-surface-active: #c5c5c5;
+
+  /* Accent */
+  --color-accent: #007bff;
+  --color-accent-light: #3395ff;
+  --color-accent-dark: #0069d9;
+  --color-accent-glow: rgba(0, 123, 255, 0.25);
+  --color-accent-subtle: rgba(0, 123, 255, 0.08);
+
+  /* Text */
+  --color-text-primary: #404040;
+  --color-text-secondary: #606060;
+  --color-text-muted: #808080;
+  --color-text-inverse: #ffffff;
+
+  /* Semantic */
+  --color-success: #28a745;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #007bff;
+
+  /* Node Colors (matches original yaNote exactly) */
+  --node-standard-bg: #FFFFFF;
+  --node-standard-border: #404040;
+  --node-standard-text: #404040;
+
+  --node-textonly-bg: transparent;
+  --node-textonly-text: #404040;
+
+  --node-grey-bg: #595959;
+  --node-grey-border: #595959;
+  --node-grey-text: #FFFFFF;
+
+  --node-red-bg: #BF1304;
+  --node-red-border: #BF1304;
+  --node-red-text: #FFFFFF;
+
+  --node-dotted-bg: #f0f0f0;
+  --node-dotted-border: #404040;
+  --node-dotted-text: #404040;
+
+  /* Editing */
+  --node-editing-bg: #ffffe0;
+  --node-editing-border: #007bff;
+
+  /* Selected */
+  --node-selected-glow: rgba(136, 136, 136, 0.5);
+  --node-selected-border: #888888;
+
+  /* Connection Line (matches original yaNote: #404040) */
+  --line-color: #404040;
+  --line-selected-color: red;
+  --line-handle-bg: #fff;
+  --line-handle-border: #000;
+
+  /* --- Spacing --- */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* --- Border Radius --- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 30px;
+  --radius-full: 9999px;
+
+  /* --- Typography --- */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 24px;
+
+  /* --- Transitions --- */
+  --transition-fast: 120ms ease;
+  --transition-normal: 200ms ease;
+  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- Shadows (matches original yaNote) --- */
+  --shadow-xs: 1px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 0 5px rgba(136, 136, 136, 0.5);
+  --shadow-glow-strong: 0 0 5px rgba(0, 123, 255, 0.5);
+
+  /* --- Glass Effect (light theme: subtle) --- */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(8px);
+
+  /* --- Z-Index Scale --- */
+  --z-canvas: 1;
+  --z-node: 300;
+  --z-node-editing: 1000;
+  --z-selection-rect: 10000;
+  --z-controls: 20000;
+  --z-tooltip: 30000;
+  --z-modal-overlay: 29999;
+  --z-modal: 30000;
+
+  /* --- Canvas (matches original yaNote dot grid) --- */
+  --canvas-size: 10000px;
+  --canvas-dot-color: #e0e0e0;
+  --canvas-dot-size: 1px;
+  --canvas-grid-size: 20px;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-canvas: #1a1a2e;
+  --color-surface: rgba(255, 255, 255, 0.08);
+  --color-surface-hover: rgba(255, 255, 255, 0.12);
+  --color-surface-active: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #1a1a2e;
+
+  /* Node Colors (dark variants) */
+  --node-standard-bg: rgba(255, 255, 255, 0.08);
+  --node-standard-border: rgba(255, 255, 255, 0.25);
+  --node-standard-text: #e2e8f0;
+
+  --node-textonly-bg: transparent;
+  --node-textonly-text: #cbd5e1;
+
+  --node-grey-bg: #4a4a5e;
+  --node-grey-border: #4a4a5e;
+  --node-grey-text: #f1f5f9;
+
+  --node-red-bg: #9b1b0e;
+  --node-red-border: #9b1b0e;
+  --node-red-text: #fef2f2;
+
+  --node-dotted-bg: #252540;
+  --node-dotted-border: rgba(255, 255, 255, 0.25);
+  --node-dotted-text: #cbd5e1;
+
+  /* Editing */
+  --node-editing-bg: rgba(99, 102, 241, 0.15);
+  --node-editing-border: #6366f1;
+
+  /* Selected */
+  --node-selected-glow: rgba(99, 102, 241, 0.4);
+  --node-selected-border: #818cf8;
+
+  /* Connection Line */
+  --line-color: rgba(148, 163, 184, 0.5);
+  --line-selected-color: #818cf8;
+  --line-handle-border: #fff;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-glow-strong: 0 0 30px rgba(99, 102, 241, 0.4);
+
+  /* Glass Effect */
+  --glass-bg: rgba(15, 15, 30, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Canvas */
+  --canvas-dot-color: rgba(99, 102, 241, 0.1);
+}

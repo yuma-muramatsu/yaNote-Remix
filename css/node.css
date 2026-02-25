@@ -1,0 +1,144 @@
+/* ===== Node Styles (based on original yaNote) ===== */
+
+/* Base Node */
+.node {
+    position: absolute;
+    padding: 10px 20px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+    white-space: pre-wrap;
+    cursor: pointer;
+    z-index: var(--z-node);
+    min-height: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    line-height: 1.6;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* --- Node Types (matches original yaNote colors) --- */
+.node.standard {
+    background-color: var(--node-standard-bg);
+    color: var(--node-standard-text);
+    border: 1px solid var(--node-standard-border);
+}
+
+.node.text-only {
+    padding: 8px 12px;
+    border-radius: var(--radius-xs);
+    background-color: var(--node-textonly-bg);
+    color: var(--node-textonly-text);
+    border: none;
+    box-shadow: none;
+}
+
+.node.grey {
+    background-color: var(--node-grey-bg);
+    color: var(--node-grey-text);
+    border: none;
+}
+
+.node.red {
+    background-color: var(--node-red-bg);
+    color: var(--node-red-text);
+    border: none;
+}
+
+.node.dotted {
+    padding: 8px 12px;
+    border-radius: var(--radius-xs);
+    background-color: var(--node-dotted-bg);
+    color: var(--node-dotted-text);
+    border: 1px dashed var(--node-dotted-border);
+}
+
+/* --- Link Colors per Node Type (matches original yaNote) --- */
+.node a {
+    color: var(--color-accent-light);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.node a:hover {
+    color: var(--color-accent-dark);
+}
+
+.node.grey a {
+    color: #A8E6CE;
+    text-decoration: underline;
+}
+
+.node.red a {
+    color: #FFD3B5;
+    text-decoration: underline;
+}
+
+/* --- Selected States (matches original yaNote) --- */
+.node.standard.selected {
+    border: 2px solid var(--node-selected-border);
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.02);
+}
+
+.node.dotted.selected {
+    border: 2px dashed var(--node-selected-border);
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.02);
+}
+
+.node.text-only.selected {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--node-selected-border);
+    transform: scale(1.02);
+}
+
+.node.grey.selected {
+    border: 2px solid #666666;
+    box-shadow: 0 0 5px rgba(102, 102, 102, 0.5);
+    transform: scale(1.02);
+}
+
+.node.red.selected {
+    border: 2px solid #666666;
+    box-shadow: 0 0 5px rgba(102, 102, 102, 0.5);
+    transform: scale(1.02);
+}
+
+/* --- Hierarchy Navigation Highlight --- */
+.node.hierarchy-highlight {
+    border: 2px solid var(--color-warning) !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), var(--shadow-sm) !important;
+    transform: scale(1.04);
+}
+
+/* --- Editing State (matches original yaNote: light yellow background) --- */
+.node.editing {
+    background: var(--node-editing-bg);
+    border-color: var(--node-editing-border);
+    box-shadow: var(--shadow-glow-strong);
+    z-index: var(--z-node-editing);
+    color: var(--color-text-primary);
+}
+
+.node.text-only.editing {
+    background: var(--node-editing-bg);
+    border: 1px solid var(--node-editing-border);
+    box-shadow: 0 0 5px var(--color-accent-glow);
+    padding: 8px 12px;
+}
+
+.node.red.editing,
+.node.grey.editing {
+    color: #000000;
+}
+
+/* --- Bold --- */
+.node.bold-text {
+    font-weight: 700;
+}

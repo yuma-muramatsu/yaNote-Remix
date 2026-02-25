@@ -1,0 +1,255 @@
+/* ===== Control Panel Styles (based on original yaNote) ===== */
+
+#controlPanel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: var(--z-controls);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Title Field - wider to match original */
+#titleField {
+    width: 200px;
+    margin-right: 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: var(--font-size-md);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
+    text-align: right;
+}
+
+#titleField::placeholder {
+    color: var(--color-text-muted);
+}
+
+#titleField:focus {
+    text-align: left;
+}
+
+/* Separator (hidden to match original flat layout) */
+.panel-separator {
+    display: none;
+}
+
+/* Button Base (matches original yaNote: #ddd background, no border) */
+#controlPanel button {
+    padding: 5px 10px;
+    cursor: pointer;
+    background: var(--color-surface);
+    border: none;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    transition: background var(--transition-fast);
+}
+
+#controlPanel button:hover {
+    background: var(--color-surface-hover);
+}
+
+#controlPanel button:active {
+    background: var(--color-surface-active);
+}
+
+#controlPanel button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Icon Buttons (fixed size, matches original) */
+#boldTextBtn,
+#changeTypeBtn,
+#changeLineTypeBtn,
+#changeDashTypeBtn,
+#guideBtn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Text Buttons (matches original: 新規, 開く, 保存, 共有) */
+#resetBtn,
+#importBtn,
+#exportBtn,
+#shareBtn,
+#themeBtn {
+    height: 30px;
+    min-width: 40px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+#resetViewBtn {
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+#importInput {
+    display: none;
+}
+
+/* --- Node Type Button States (matches original yaNote exactly) --- */
+#changeTypeBtn {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    font-size: 14px;
+    padding: 0;
+}
+
+#changeTypeBtn.standard {
+    background-color: #FFFFFF;
+    border-color: #404040;
+    color: #404040;
+    border: 1px solid #595959;
+}
+
+#changeTypeBtn.text-only {
+    background-color: #FFFFFF;
+    border: 1px dashed #404040;
+    color: #404040;
+}
+
+#changeTypeBtn.grey {
+    background-color: #595959;
+    border-color: #595959;
+    color: #FFFFFF;
+}
+
+#changeTypeBtn.red {
+    background-color: #BF1304;
+    border-color: #BF1304;
+    color: #FFFFFF;
+}
+
+#changeTypeBtn.dotted {
+    background-color: #f0f0f0;
+    border: 1px dashed #404040;
+    color: #404040;
+}
+
+/* Bold Button Active (matches original: blue) */
+#boldTextBtn.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* --- Tooltip --- */
+.tooltip {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font-family);
+    z-index: var(--z-tooltip);
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translateY(30px);
+}
+
+/* --- Shortcut Badge --- */
+.shortcut-badge {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-xs);
+    padding: 1px 4px;
+    font-size: 10px;
+    font-family: var(--font-family);
+    color: var(--color-text-muted);
+    margin-left: var(--space-xs);
+    line-height: 1.4;
+}
+
+/* Hierarchy mode indicator */
+#hierarchyIndicator {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #b45309;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    z-index: var(--z-controls);
+    display: none;
+    animation: slide-in-right 0.2s ease-out;
+}
+
+#hierarchyIndicator.visible {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+@keyframes slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== Dark theme overrides for controls ===== */
+[data-theme="dark"] #controlPanel button {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] #controlPanel button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] #changeTypeBtn.standard {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] #changeTypeBtn.text-only {
+    background-color: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    color: #94a3b8;
+}
+
+[data-theme="dark"] #changeTypeBtn.dotted {
+    background-color: #252540;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .tooltip {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+[data-theme="dark"] #hierarchyIndicator {
+    color: #fbbf24;
+}
+
+[data-theme="dark"] #boldTextBtn.active {
+    background-color: #6366f1;
+}

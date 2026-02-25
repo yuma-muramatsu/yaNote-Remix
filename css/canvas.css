@@ -1,0 +1,76 @@
+/* ===== Canvas Styles ===== */
+#canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--canvas-size);
+    height: var(--canvas-size);
+    overflow: visible;
+    transform: translate(-5000px, -5000px) scale(1);
+    background-color: var(--color-bg-canvas);
+    background-image: radial-gradient(circle, var(--canvas-dot-color) var(--canvas-dot-size), transparent var(--canvas-dot-size));
+    background-size: var(--canvas-grid-size) var(--canvas-grid-size);
+    touch-action: none;
+}
+
+#svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Selection Rectangle (matches original yaNote) */
+#selectionRect {
+    position: fixed;
+    border: 1px dashed #000;
+    background-color: rgba(0, 0, 255, 0.1);
+    pointer-events: none;
+    z-index: var(--z-selection-rect);
+}
+
+/* Zoom Display */
+#zoomDisplay {
+    position: fixed;
+    bottom: var(--space-md);
+    right: var(--space-md);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    color: var(--color-text-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    z-index: var(--z-controls);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+}
+
+#zoomDisplay.visible {
+    opacity: 1;
+}
+
+/* Copyright */
+#copyright {
+    position: fixed;
+    bottom: var(--space-sm);
+    left: var(--space-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    opacity: 0.4;
+    z-index: var(--z-selection-rect);
+    font-family: var(--font-family);
+    pointer-events: none;
+    user-select: none;
+    transition: opacity var(--transition-smooth);
+}
+
+#copyright:hover {
+    opacity: 0.8;
+}
