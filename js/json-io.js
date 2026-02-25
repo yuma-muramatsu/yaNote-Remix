@@ -19,7 +19,7 @@ export function showJsonModal(app) {
         modal = document.createElement('div');
         modal.id = 'jsonModal';
         modal.className = 'modal';
-        modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--color-surface,#fff);border-radius:10px;padding:24px;width:90%;max-width:600px;z-index:10001;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.3);';
+        modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--color-bg-primary,#fff);border-radius:10px;padding:24px;width:90%;max-width:600px;z-index:30001;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.5);border:1px solid var(--color-border,rgba(0,0,0,0.1));';
         modal.innerHTML = `
             <h3 style="margin-top:0;color:var(--color-text-primary);">JSON データ入出力</h3>
             <p style="font-size:13px;color:var(--color-text-secondary);">テキストエリアの JSON をコピーしてバックアップしたり、別の JSON を貼り付けて読み込むことができます。</p>
