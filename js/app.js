@@ -168,8 +168,11 @@ class YaNoteApp {
 
         // Global Paste handler for JSON loading
         window.addEventListener("paste", e => {
-            // Only process if not editing a node
-            if (this.editingNode || (document.activeElement && document.activeElement.isContentEditable)) return;
+            // Only process if not editing a node or focused on an input/textarea
+            if (this.editingNode ||
+                (document.activeElement && (document.activeElement.isContentEditable ||
+                    document.activeElement.tagName === "INPUT" ||
+                    document.activeElement.tagName === "TEXTAREA"))) return;
             const text = e.clipboardData.getData("text");
             try {
                 const json = JSON.parse(text);
@@ -223,7 +226,10 @@ class YaNoteApp {
 
     // ===== Keyboard Handler (capture phase) =====
     handleKeyDown(e) {
-        if (document.activeElement === this.titleField) return;
+        // Allow native behavior for inputs and textareas (except Escape which we use for modals)
+        if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+            if (e.key !== "Escape") return;
+        }
 
         // Escape: ALWAYS handle first (modals / editing cancel / hierarchy exit)
         if (e.key === "Escape") {
@@ -315,7 +321,9 @@ class YaNoteApp {
 
         // Ctrl+A: Select all
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
-            if (document.activeElement && document.activeElement.isContentEditable) return;
+            if (document.activeElement && (document.activeElement.isContentEditable ||
+                document.activeElement.tagName === "INPUT" ||
+                document.activeElement.tagName === "TEXTAREA")) return;
             e.preventDefault(); this.selectAll(); return;
         }
 
