@@ -4,7 +4,7 @@ import { NoteNode } from './node.js';
 import { Connection } from './connection.js';
 import { HierarchyNavigator } from './hierarchy.js';
 import { showTooltip, showRightAlignedTooltip, hideAllTooltips } from './tooltip.js';
-import { copyAsMarkdown } from './notion.js';
+import { showJsonModal } from './json-io.js';
 
 class YaNoteApp {
     constructor() {
@@ -244,6 +244,14 @@ class YaNoteApp {
                 if (shareOverlay) shareOverlay.style.display = "none";
                 return;
             }
+            // Close JSON modal if open
+            const jsonModal = document.getElementById("jsonModal");
+            const jsonOverlay = document.getElementById("jsonModalOverlay");
+            if (jsonModal && jsonModal.style.display === "block") {
+                jsonModal.style.display = "none";
+                if (jsonOverlay) jsonOverlay.style.display = "none";
+                return;
+            }
             if (this.editingNode) { this.finishEditingNode(this.editingNode, false); return; }
             if (this.hierarchyNav.active) { this.hierarchyNav.deactivate(); return; }
             return;
@@ -461,11 +469,11 @@ class YaNoteApp {
         document.getElementById("guideBtn").addEventListener("click", () => this.showShortcutsHelp());
         document.getElementById("resetViewBtn").addEventListener("click", () => { this.resetView(); showTooltip(document.getElementById("resetViewBtn"), "表示リセット"); });
 
-        // JSON copy (N button)
+        // JSON I/O (JSON button)
         const notionBtn = document.getElementById("notionBtn");
         if (notionBtn) {
-            notionBtn.addEventListener("click", () => this.copyJsonToClipboard());
-            notionBtn.addEventListener("mouseenter", () => showRightAlignedTooltip(notionBtn, "JSON形式でコピー"));
+            notionBtn.addEventListener("click", () => showJsonModal(this));
+            notionBtn.addEventListener("mouseenter", () => showRightAlignedTooltip(notionBtn, "JSON形式で入出力"));
         }
 
         // Theme toggle
