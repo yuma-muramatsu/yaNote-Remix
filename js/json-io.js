@@ -45,8 +45,8 @@ export function showJsonModal(app) {
             <div id="jsonModalResult" style="margin-bottom:12px;padding:8px;border-radius:4px;display:none;font-size:13px;"></div>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
                 <button id="jsonModalCloseBtn">閉じる</button>
-                <button id="jsonModalCopyBtn" style="background:var(--color-accent, #4f46e5); color:#fff;">コピー</button>
-                <button id="jsonModalLoadBtn">リロード</button>
+                <button id="jsonModalCopyBtn">コピー</button>
+                <button id="jsonModalLoadBtn" style="background:var(--color-accent, #4f46e5); color:#fff;">リロード</button>
             </div>
         `;
         document.body.appendChild(modal);
@@ -101,9 +101,12 @@ export function showJsonModal(app) {
 
     // 表示時の処理
     const state = app.captureState();
-    document.getElementById('jsonTextArea').value = JSON.stringify(state, null, 2);
+    const textArea = document.getElementById('jsonTextArea');
+    textArea.value = JSON.stringify(state, null, 2);
     document.getElementById('jsonModalResult').style.display = 'none';
 
     overlay.style.display = 'block';
     modal.style.display = 'block';
+
+    textArea.select();
 }

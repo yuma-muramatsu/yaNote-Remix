@@ -337,7 +337,7 @@ class YaNoteApp {
                 // Create child node
                 const off = n.element.offsetHeight + 40;
                 const pos = this.findNonOverlappingPosition(n.x, n.y + off, n.element.offsetWidth + 40, n.element.offsetHeight + 20);
-                const nn = this.createNode("", pos.x, pos.y); nn.setType(n.nodeType);
+                const nn = this.createNode("", pos.x, pos.y);
                 const conn = this.createConnection(n, nn);
                 conn.setLineType(this.defaultLineType);
                 conn.setDashType(this.defaultDashType);
@@ -350,7 +350,6 @@ class YaNoteApp {
                 const off = cur.element.offsetHeight + 40;
                 const pos = this.findNonOverlappingPosition(cur.x, cur.y + off, 160, cur.element.offsetHeight + 20);
                 const nn = this.createNode("", pos.x, pos.y);
-                nn.setType(cur.nodeType);
                 const conn = this.createConnection(cur, nn);
                 conn.setLineType(this.defaultLineType);
                 conn.setDashType(this.defaultDashType);
@@ -611,7 +610,7 @@ class YaNoteApp {
                 if (node.nodeType === "dotted") { conn.setLineType("no-arrow"); conn.setDashType("dashed"); }
                 this.clearSelection(); this.selectNode(dn);
             } else {
-                const pos = this.eventToLogical(ev); const nn = this.createNode("", pos.x, pos.y); nn.setType("text-only"); this.startEditingNode(nn);
+                const pos = this.eventToLogical(ev); const nn = this.createNode("", pos.x, pos.y); this.startEditingNode(nn);
                 const conn = this.createConnection(node, nn);
                 if (node.nodeType === "dotted") { conn.setLineType("no-arrow"); conn.setDashType("dashed"); }
                 this.clearSelection(); this.selectNode(nn);
@@ -707,7 +706,7 @@ class YaNoteApp {
             const xPos = rightmost + 160;
             const yPos = n.y;
             const pos = this.findNonOverlappingPosition(xPos, yPos, 160, n.element.offsetHeight + 20);
-            const nn = this.createNode("", pos.x, pos.y); nn.setType(n.nodeType);
+            const nn = this.createNode("", pos.x, pos.y);
             const conn = this.createConnection(parent, nn);
             conn.setLineType(this.defaultLineType);
             conn.setDashType(this.defaultDashType);
@@ -715,7 +714,7 @@ class YaNoteApp {
         } else {
             // No parent found: create node to the right
             const pos = this.findNonOverlappingPosition(n.x + 160, n.y, 160, n.element.offsetHeight + 20);
-            const nn = this.createNode("", pos.x, pos.y); nn.setType(n.nodeType);
+            const nn = this.createNode("", pos.x, pos.y);
             this.startEditingNode(nn); this.selectNode(nn); this.updateControlButtonsState(); this.saveState();
         }
     }
