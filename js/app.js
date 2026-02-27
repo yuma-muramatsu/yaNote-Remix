@@ -131,7 +131,12 @@ class YaNoteApp {
     }
 
     updateGlobalTransform() {
-        this.canvas.style.transform = `translate(-5000px, -5000px) translate(${this.globalPan.x}px, ${this.globalPan.y}px) scale(${this.globalZoom})`;
+        // Applying scale first, then translation. Pan is now in coordinate space.
+        // ScreenPos = (Coord - 5000 + Pan) * Zoom + CenterOffset
+        const ox = -5000 + this.globalPan.x;
+        const oy = -5000 + this.globalPan.y;
+        this.canvas.style.transform = `scale(${this.globalZoom}) translate(${ox}px, ${oy}px)`;
+
         const indicator = document.getElementById("zoomLevelIndicator");
         if (indicator) indicator.textContent = `${Math.round(this.globalZoom * 100)}%`;
     }
@@ -149,7 +154,11 @@ class YaNoteApp {
 
     eventToLogical(e) {
         const rect = this.canvas.getBoundingClientRect();
-        return { x: (e.clientX - rect.left) / this.globalZoom, y: (e.clientY - rect.top) / this.globalZoom };
+        // Logical = (Screen - RectLeft) / Zoom
+        return {
+            x: (e.clientX - rect.left) / this.globalZoom,
+            y: (e.clientY - rect.top) / this.globalZoom
+        };
     }
 
     // ===== Event Listeners =====
@@ -541,7 +550,6 @@ class YaNoteApp {
         const steps = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0];
         let currentIdx = steps.indexOf(this.globalZoom);
 
-        // If current zoom is not exactly in steps (e.g. initial or after reset), find nearest
         if (currentIdx === -1) {
             currentIdx = steps.reduce((prev, curr, idx) =>
                 Math.abs(curr - this.globalZoom) < Math.abs(steps[prev] - this.globalZoom) ? idx : prev, 0);
@@ -553,24 +561,24 @@ class YaNoteApp {
 
         if (newZoom === this.globalZoom) return;
 
-        // --- Fix Center Position ---
-        // 1. Get current screen center in screen coordinates
-        const screenCenterX = window.innerWidth / 2;
-        const screenCenterY = window.innerHeight / 2;
+        // Current logical point at the center of the viewport
+        const viewCenterX = window.innerWidth / 2;
+        const viewCenterY = window.innerHeight / 2;
 
-        // 2. Convert screen center to logical coordinates before zoom
-        // Logical = (Screen - Pan) / Zoom
-        const logicalCenterX = (screenCenterX - this.globalPan.x) / this.globalZoom;
-        const logicalCenterY = (screenCenterY - this.globalPan.y) / this.globalZoom;
+        // Logical = (ScreenCenter - RectLeft) / Zoom
+        const rect = this.canvas.getBoundingClientRect();
+        const logicalCenterX = (viewCenterX - rect.left) / this.globalZoom;
+        const logicalCenterY = (viewCenterY - rect.top) / this.globalZoom;
 
-        // 3. Update zoom
-        const oldZoom = this.globalZoom;
+        // Update zoom
         this.globalZoom = newZoom;
 
-        // 4. Calculate new pan to keep the same logical center at the screen center
-        // Pan = Screen - (Logical * NewZoom)
-        this.globalPan.x = screenCenterX - (logicalCenterX * this.globalZoom);
-        this.globalPan.y = screenCenterY - (logicalCenterY * this.globalZoom);
+        // Adjust pan so the SAME logical point stays at screen center
+        // With scale-first transform and 0,0 origin:
+        // ScreenPos = ((-5000 + pan) + logical) * zoom + ViewportHalf
+        // To simplify, we just need to set the new pan based on the logical center
+        this.globalPan.x = 5000 - logicalCenterX;
+        this.globalPan.y = 5000 - logicalCenterY;
 
         this.updateGlobalTransform();
         this.updateAllConnections();
@@ -581,13 +589,19 @@ class YaNoteApp {
         let cn = this.nodes.find(n => n.element.textContent.trim() === "中心ノード") || this.nodes.find(n => n.id === 1) || this.nodes[0];
         if (cn) {
             setTimeout(() => {
-                const r = cn.element.getBoundingClientRect();
-                // When zoom is 1.0, getBoundingClientRect returns the actual size
-                this.globalPan.x += (window.innerWidth / 2) - (r.left + r.width / 2);
-                this.globalPan.y += (window.innerHeight / 2) - (r.top + r.height / 2);
-                this.updateGlobalTransform(); this.updateAllConnections();
+                // To center a node at (nx, ny):
+                // logicalCenterX = nx + (nodeWidth / 2)
+                // globalPan.x = 5000 - logicalCenterX
+                const nw = cn.element.offsetWidth;
+                const nh = cn.element.offsetHeight;
+                this.globalPan.x = 5000 - (cn.x + nw / 2);
+                this.globalPan.y = 5000 - (cn.y + nh / 2);
+                this.updateGlobalTransform();
+                this.updateAllConnections();
             }, 50);
         } else {
+            this.globalPan.x = 0;
+            this.globalPan.y = 0;
             this.updateGlobalTransform();
         }
     }

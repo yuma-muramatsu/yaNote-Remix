@@ -7,6 +7,7 @@
     height: var(--canvas-size);
     overflow: visible;
     transform: translate(-5000px, -5000px) scale(1);
+    transform-origin: 0 0;
     background-color: var(--color-bg-canvas);
     background-image: radial-gradient(circle, var(--canvas-dot-color) var(--canvas-dot-size), transparent var(--canvas-dot-size));
     background-size: var(--canvas-grid-size) var(--canvas-grid-size);
