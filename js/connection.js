@@ -46,45 +46,70 @@ export class Connection {
     }
 
     update() {
-        const canvasRect = this.app.canvas.getBoundingClientRect();
+        if (!this.app) return;
+
         let fromPoint, toPoint;
 
-        if (this.fromNode && document.body.contains(this.fromNode.element)) {
-            const rect = this.fromNode.element.getBoundingClientRect();
-            fromPoint = { x: rect.left + rect.width / 2 - canvasRect.left, y: rect.top + rect.height / 2 - canvasRect.top };
-        } else if (this.fromCoord && typeof this.fromCoord.x === "number") {
-            fromPoint = this.fromCoord;
+        // Use logical coordinates (app/node standard) instead of screen coordinates
+        if (this.fromNode) {
+            const nw = this.fromNode.element.offsetWidth;
+            const nh = this.fromNode.element.offsetHeight;
+            fromPoint = {
+                x: this.fromNode.x + nw / 2,
+                y: this.fromNode.y + nh / 2
+            };
+        } else if (this.fromCoord) {
+            fromPoint = { x: this.fromCoord.x, y: this.fromCoord.y };
         } else return;
 
-        if (this.toNode && document.body.contains(this.toNode.element)) {
-            const rect = this.toNode.element.getBoundingClientRect();
-            toPoint = { x: rect.left + rect.width / 2 - canvasRect.left, y: rect.top + rect.height / 2 - canvasRect.top };
-        } else if (this.toCoord && typeof this.toCoord.x === "number") {
-            toPoint = this.toCoord;
+        if (this.toNode) {
+            const nw = this.toNode.element.offsetWidth;
+            const nh = this.toNode.element.offsetHeight;
+            toPoint = {
+                x: this.toNode.x + nw / 2,
+                y: this.toNode.y + nh / 2
+            };
+        } else if (this.toCoord) {
+            toPoint = { x: this.toCoord.x, y: this.toCoord.y };
         } else return;
 
-        const origFrom = Object.assign({}, fromPoint);
-        const origTo = Object.assign({}, toPoint);
+        const origFrom = { ...fromPoint };
+        const origTo = { ...toPoint };
 
-        if (this.toNode && document.body.contains(this.toNode.element)) {
-            const endpoint = computeEndpoint(origTo.x, origTo.y, origFrom.x, origFrom.y, this.toNode.element.getBoundingClientRect());
+        // Adjust for endpoint (arrow) alignment
+        if (this.toNode) {
+            const nw = this.toNode.element.offsetWidth;
+            const nh = this.toNode.element.offsetHeight;
+            // Logical rect
+            const rect = {
+                left: this.toNode.x, top: this.toNode.y,
+                right: this.toNode.x + nw, bottom: this.toNode.y + nh,
+                width: nw, height: nh
+            };
+            const endpoint = computeEndpoint(origTo.x, origTo.y, origFrom.x, origFrom.y, rect);
             toPoint.x = endpoint.arrowX;
             toPoint.y = endpoint.arrowY;
         }
 
-        if ((this.lineType === "reverse-arrow" || this.lineType === "both-arrow") &&
-            this.fromNode && document.body.contains(this.fromNode.element)) {
-            const startpoint = computeEndpoint(origFrom.x, origFrom.y, origTo.x, origTo.y, this.fromNode.element.getBoundingClientRect());
+        if ((this.lineType === "reverse-arrow" || this.lineType === "both-arrow") && this.fromNode) {
+            const nw = this.fromNode.element.offsetWidth;
+            const nh = this.fromNode.element.offsetHeight;
+            const rect = {
+                left: this.fromNode.x, top: this.fromNode.y,
+                right: this.fromNode.x + nw, bottom: this.fromNode.y + nh,
+                width: nw, height: nh
+            };
+            const startpoint = computeEndpoint(origFrom.x, origFrom.y, origTo.x, origTo.y, rect);
             fromPoint.x = startpoint.arrowX;
             fromPoint.y = startpoint.arrowY;
         }
 
         // Text-only / dotted node: adjust start point to edge
         if (this.fromNode && (this.fromNode.nodeType === "text-only" || this.fromNode.nodeType === "dotted")) {
-            this._adjustEdgeEndpoint(this.fromNode, canvasRect, fromPoint, toPoint, true);
+            this._adjustEdgeEndpoint(this.fromNode, fromPoint, toPoint);
         }
         if (this.toNode && (this.toNode.nodeType === "text-only" || this.toNode.nodeType === "dotted")) {
-            this._adjustEdgeEndpoint(this.toNode, canvasRect, toPoint, fromPoint, false);
+            this._adjustEdgeEndpoint(this.toNode, toPoint, fromPoint);
         }
 
         this.line.setAttribute("x1", fromPoint.x);
@@ -102,28 +127,34 @@ export class Connection {
         }
     }
 
-    _adjustEdgeEndpoint(node, canvasRect, point, otherPoint, isFrom) {
-        const nodeRect = node.element.getBoundingClientRect();
+    _adjustEdgeEndpoint(node, point, otherPoint) {
+        const nw = node.element.offsetWidth;
+        const nh = node.element.offsetHeight;
+
+        // Logical local rect
         const localRect = {
-            left: nodeRect.left - canvasRect.left,
-            top: nodeRect.top - canvasRect.top,
-            right: nodeRect.right - canvasRect.left,
-            bottom: nodeRect.bottom - canvasRect.top
+            left: node.x,
+            top: node.y,
+            right: node.x + nw,
+            bottom: node.y + nh
         };
         const cx = (localRect.left + localRect.right) / 2;
         const cy = (localRect.top + localRect.bottom) / 2;
-        const dirX = isFrom ? (otherPoint.x - point.x) : (otherPoint.x - point.x);
-        const dirY = isFrom ? (otherPoint.y - point.y) : (otherPoint.y - point.y);
+
+        const dirX = otherPoint.x - point.x;
+        const dirY = otherPoint.y - point.y;
         const len = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
         const ndx = dirX / len;
         const ndy = dirY / len;
+
         let tCandidates = [];
         if (ndx > 0) tCandidates.push((localRect.right - cx) / ndx);
         else if (ndx < 0) tCandidates.push((localRect.left - cx) / ndx);
         if (ndy > 0) tCandidates.push((localRect.bottom - cy) / ndy);
         else if (ndy < 0) tCandidates.push((localRect.top - cy) / ndy);
+
         const t = Math.min(...tCandidates.filter(v => v > 0));
-        const offset = 2 + (nodeRect.width / 50);
+        const offset = 2 + (nw / 50);
         point.x = cx + ndx * (t + offset);
         point.y = cy + ndy * (t + offset);
     }
