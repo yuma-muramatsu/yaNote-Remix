@@ -132,6 +132,8 @@ class YaNoteApp {
 
     updateGlobalTransform() {
         this.canvas.style.transform = `translate(-5000px, -5000px) translate(${this.globalPan.x}px, ${this.globalPan.y}px) scale(${this.globalZoom})`;
+        const indicator = document.getElementById("zoomLevelIndicator");
+        if (indicator) indicator.textContent = `${Math.round(this.globalZoom * 100)}%`;
     }
 
     recalcCenter() {
@@ -189,7 +191,10 @@ class YaNoteApp {
 
         // Wheel scroll
         this.canvas.addEventListener("wheel", e => {
-            if (e.ctrlKey || e.metaKey) return;
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault(); // Block browser zoom
+                return;
+            }
             e.preventDefault();
             if (e.shiftKey) { this.globalPan.x -= (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 0.5; }
             else { if (e.deltaY !== 0) this.globalPan.y -= e.deltaY * 0.5; if (e.deltaX !== 0) this.globalPan.x -= e.deltaX * 0.5; }
@@ -477,6 +482,19 @@ class YaNoteApp {
         document.getElementById("guideBtn").addEventListener("click", () => this.showShortcutsHelp());
         document.getElementById("resetViewBtn").addEventListener("click", () => { this.resetView(); showTooltip(document.getElementById("resetViewBtn"), "表示リセット"); });
 
+        // Zoom buttons
+        document.getElementById("zoomInBtn").addEventListener("click", () => {
+            this.changeZoom(1.2);
+        });
+        document.getElementById("zoomOutBtn").addEventListener("click", () => {
+            this.changeZoom(0.8);
+        });
+        document.getElementById("zoomLevelIndicator").addEventListener("click", () => {
+            this.globalZoom = 1.0;
+            this.resetView();
+        });
+        document.getElementById("zoomLevelIndicator").style.cursor = "pointer";
+
         // JSON I/O (JSON button)
         const notionBtn = document.getElementById("notionBtn");
         if (notionBtn) {
@@ -519,15 +537,36 @@ class YaNoteApp {
         document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
     }
 
+    changeZoom(factor) {
+        let newZoom = this.globalZoom * factor;
+        newZoom = Math.max(0.2, Math.min(3.0, newZoom));
+
+        // Zoom toward center of screen
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+
+        const realFactor = newZoom / this.globalZoom;
+        this.globalPan.x = cx - (cx - this.globalPan.x) * realFactor;
+        this.globalPan.y = cy - (cy - this.globalPan.y) * realFactor;
+
+        this.globalZoom = newZoom;
+        this.updateGlobalTransform();
+        this.updateAllConnections();
+    }
+
     resetView() {
+        this.globalZoom = 1.0;
         let cn = this.nodes.find(n => n.element.textContent.trim() === "中心ノード") || this.nodes.find(n => n.id === 1) || this.nodes[0];
         if (cn) {
             setTimeout(() => {
                 const r = cn.element.getBoundingClientRect();
+                // When zoom is 1.0, getBoundingClientRect returns the actual size
                 this.globalPan.x += (window.innerWidth / 2) - (r.left + r.width / 2);
                 this.globalPan.y += (window.innerHeight / 2) - (r.top + r.height / 2);
                 this.updateGlobalTransform(); this.updateAllConnections();
             }, 50);
+        } else {
+            this.updateGlobalTransform();
         }
     }
 

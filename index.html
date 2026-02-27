@@ -55,7 +55,12 @@
     <button id="changeTypeBtn" title="ノード種類変更" tabindex="-1">◻︎</button>
     <button id="changeLineTypeBtn" title="線種変更" tabindex="-1">ー</button>
     <button id="changeDashTypeBtn" title="線タイプ変更" tabindex="-1">—</button>
-    <button id="resetViewBtn" title="表示位置をリセット" tabindex="-1">⊙</button>
+    <button id="resetViewBtn" title="表示位置とズームをリセット" tabindex="-1">⊙</button>
+    <div id="zoomControls">
+      <button id="zoomOutBtn" title="縮小" tabindex="-1">−</button>
+      <span id="zoomLevelIndicator">100%</span>
+      <button id="zoomInBtn" title="拡大" tabindex="-1">+</button>
+    </div>
     <button id="resetBtn" tabindex="-1">新規</button>
     <button id="importBtn" tabindex="-1">開く</button>
     <input type="file" id="importInput" accept=".json" style="display:none">

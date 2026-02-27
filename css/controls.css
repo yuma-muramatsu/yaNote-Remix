@@ -98,6 +98,32 @@
     font-weight: 500;
 }
 
+#zoomControls {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    border-radius: 3px;
+    height: 30px;
+    padding: 0 5px;
+    gap: 5px;
+}
+
+#zoomControls button {
+    background: transparent !important;
+    padding: 0 5px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    font-size: 16px !important;
+}
+
+#zoomLevelIndicator {
+    font-size: 11px;
+    font-family: var(--font-family);
+    min-width: 35px;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
 #importInput {
     display: none;
 }
