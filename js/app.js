@@ -669,13 +669,33 @@ class YaNoteApp {
     }
 
     startBranchCreation(e, node) {
-        const cR = this.canvas.getBoundingClientRect(); const nR = node.element.getBoundingClientRect();
-        const cx = nR.left + nR.width / 2 - cR.left, cy = nR.top + nR.height / 2 - cR.top;
+        const cR = this.canvas.getBoundingClientRect();
+        const nw = node.element.offsetWidth;
+        const nh = node.element.offsetHeight;
+
+        // Logical start point (center of node)
+        const cx = node.x + nw / 2;
+        const cy = node.y + nh / 2;
+
         const tl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        tl.setAttribute("stroke", "var(--color-accent-light,#818cf8)"); tl.setAttribute("stroke-width", "2"); tl.setAttribute("stroke-dasharray", "6");
-        tl.setAttribute("x1", cx); tl.setAttribute("y1", cy); tl.setAttribute("x2", e.clientX - cR.left); tl.setAttribute("y2", e.clientY - cR.top);
+        tl.setAttribute("stroke", "var(--color-accent-light,#818cf8)");
+        tl.setAttribute("stroke-width", "2");
+        tl.setAttribute("stroke-dasharray", "6");
+
+        // Convert mouse position to logical coordinate
+        const target = this.eventToLogical(e);
+
+        tl.setAttribute("x1", cx);
+        tl.setAttribute("y1", cy);
+        tl.setAttribute("x2", target.x);
+        tl.setAttribute("y2", target.y);
+
         this.svg.appendChild(tl);
-        const onMove = ev => { tl.setAttribute("x2", ev.clientX - cR.left); tl.setAttribute("y2", ev.clientY - cR.top); };
+        const onMove = ev => {
+            const cur = this.eventToLogical(ev);
+            tl.setAttribute("x2", cur.x);
+            tl.setAttribute("y2", cur.y);
+        };
         const onUp = ev => {
             document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); this.svg.removeChild(tl);
             this.branchCreationJustHappened = true; setTimeout(() => this.branchCreationJustHappened = false, 300);
@@ -696,12 +716,37 @@ class YaNoteApp {
     }
 
     startBlankDoubleClick(e) {
-        const cR = this.canvas.getBoundingClientRect(); const sx = e.clientX - cR.left, sy = e.clientY - cR.top;
+        // Use logical coordinates for scaling support
+        const startPos = this.eventToLogical(e);
+        const sx = startPos.x;
+        const sy = startPos.y;
+
         const tl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        tl.setAttribute("stroke", "var(--color-accent-light,#818cf8)"); tl.setAttribute("stroke-width", "2"); tl.setAttribute("stroke-dasharray", "6");
-        tl.setAttribute("x1", sx); tl.setAttribute("y1", sy); tl.setAttribute("x2", sx); tl.setAttribute("y2", sy);
-        const ic = { x: e.clientX, y: e.clientY }; let lm = false, fc = null;
-        const onMove = ev => { const dx = ev.clientX - ic.x, dy = ev.clientY - ic.y; if (!lm && Math.sqrt(dx * dx + dy * dy) > 10) { lm = true; fc = this.eventToLogical({ clientX: ic.x, clientY: ic.y }); this.svg.appendChild(tl); } if (lm) { tl.setAttribute("x2", ev.clientX - cR.left); tl.setAttribute("y2", ev.clientY - cR.top); } };
+        tl.setAttribute("stroke", "var(--color-accent-light,#818cf8)");
+        tl.setAttribute("stroke-width", "2");
+        tl.setAttribute("stroke-dasharray", "6");
+        tl.setAttribute("x1", sx);
+        tl.setAttribute("y1", sy);
+        tl.setAttribute("x2", sx);
+        tl.setAttribute("y2", sy);
+
+        const ic = { x: e.clientX, y: e.clientY };
+        let lm = false, fc = null;
+
+        const onMove = ev => {
+            const dx = ev.clientX - ic.x;
+            const dy = ev.clientY - ic.y;
+            if (!lm && Math.sqrt(dx * dx + dy * dy) > 10) {
+                lm = true;
+                fc = this.eventToLogical({ clientX: ic.x, clientY: ic.y });
+                this.svg.appendChild(tl);
+            }
+            if (lm) {
+                const cur = this.eventToLogical(ev);
+                tl.setAttribute("x2", cur.x);
+                tl.setAttribute("y2", cur.y);
+            }
+        };
         const onUp = ev => {
             document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp);
             if (lm) {

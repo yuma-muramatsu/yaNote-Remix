@@ -1,4 +1,4 @@
-const CACHE_NAME = "yaNote-remix-cache-v1.0.6";
+const CACHE_NAME = "yaNote-remix-cache-v1.0.7";
 const APP_ASSETS = [
     "./",
     "./index.html",
