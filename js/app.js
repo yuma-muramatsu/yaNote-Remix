@@ -484,10 +484,10 @@ class YaNoteApp {
 
         // Zoom buttons
         document.getElementById("zoomInBtn").addEventListener("click", () => {
-            this.changeZoom(1.2);
+            this.changeZoom(1); // logical direction: up
         });
         document.getElementById("zoomOutBtn").addEventListener("click", () => {
-            this.changeZoom(0.8);
+            this.changeZoom(-1); // logical direction: down
         });
         document.getElementById("zoomLevelIndicator").addEventListener("click", () => {
             this.globalZoom = 1.0;
@@ -537,19 +537,41 @@ class YaNoteApp {
         document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
     }
 
-    changeZoom(factor) {
-        let newZoom = this.globalZoom * factor;
-        newZoom = Math.max(0.2, Math.min(3.0, newZoom));
+    changeZoom(direction) {
+        const steps = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0];
+        let currentIdx = steps.indexOf(this.globalZoom);
 
-        // Zoom toward center of screen
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
+        // If current zoom is not exactly in steps (e.g. initial or after reset), find nearest
+        if (currentIdx === -1) {
+            currentIdx = steps.reduce((prev, curr, idx) =>
+                Math.abs(curr - this.globalZoom) < Math.abs(steps[prev] - this.globalZoom) ? idx : prev, 0);
+        }
 
-        const realFactor = newZoom / this.globalZoom;
-        this.globalPan.x = cx - (cx - this.globalPan.x) * realFactor;
-        this.globalPan.y = cy - (cy - this.globalPan.y) * realFactor;
+        let newIdx = currentIdx + direction;
+        newIdx = Math.max(0, Math.min(steps.length - 1, newIdx));
+        const newZoom = steps[newIdx];
 
+        if (newZoom === this.globalZoom) return;
+
+        // --- Fix Center Position ---
+        // 1. Get current screen center in screen coordinates
+        const screenCenterX = window.innerWidth / 2;
+        const screenCenterY = window.innerHeight / 2;
+
+        // 2. Convert screen center to logical coordinates before zoom
+        // Logical = (Screen - Pan) / Zoom
+        const logicalCenterX = (screenCenterX - this.globalPan.x) / this.globalZoom;
+        const logicalCenterY = (screenCenterY - this.globalPan.y) / this.globalZoom;
+
+        // 3. Update zoom
+        const oldZoom = this.globalZoom;
         this.globalZoom = newZoom;
+
+        // 4. Calculate new pan to keep the same logical center at the screen center
+        // Pan = Screen - (Logical * NewZoom)
+        this.globalPan.x = screenCenterX - (logicalCenterX * this.globalZoom);
+        this.globalPan.y = screenCenterY - (logicalCenterY * this.globalZoom);
+
         this.updateGlobalTransform();
         this.updateAllConnections();
     }
